@@ -25,20 +25,34 @@ public class MainActivity extends AppCompatActivity {
         MyGroup group1 = new MyGroup("group 1", childrenA);
 
 
-
         List<MyGroupChild> childrenb = new ArrayList<>();
-        childrenA.add(new MyGroupChild("1", false));
-        childrenA.add(new MyGroupChild("2", false));
-        childrenA.add(new MyGroupChild("3", false));
+        childrenb.add(new MyGroupChild("1", false));
+        childrenb.add(new MyGroupChild("2", false));
+        childrenb.add(new MyGroupChild("3", false));
 
         MyGroup group2 = new MyGroup("group 2", childrenb);
 
+        List<MyGroupChild> childrenc = new ArrayList<>();
+        childrenc.add(new MyGroupChild("1", false));
+        childrenc.add(new MyGroupChild("2", false));
+        childrenc.add(new MyGroupChild("3", false));
 
+        MyGroup group3 = new MyGroup("group 3", childrenc);
 
 
         List<MyGroup> myGroups = new ArrayList<>();
         myGroups.add(group1);
         myGroups.add(group2);
+        myGroups.add(group3);
+        myGroups.add(group1);
+        myGroups.add(group2);
+        myGroups.add(group3);
+        myGroups.add(group1);
+        myGroups.add(group2);
+        myGroups.add(group3);
+        myGroups.add(group1);
+        myGroups.add(group2);
+        myGroups.add(group3);
 
         RecyclerView mRecyclerView = findViewById(R.id.recyclerView);
 

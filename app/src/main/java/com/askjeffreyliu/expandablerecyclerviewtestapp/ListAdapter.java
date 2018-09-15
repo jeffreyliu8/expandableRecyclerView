@@ -1,10 +1,16 @@
 package com.askjeffreyliu.expandablerecyclerviewtestapp;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -12,6 +18,8 @@ import java.util.List;
 
 public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<MyGroup> mList;
+    private Context mContext;
+    private SparseBooleanArray listPosition = new SparseBooleanArray();
 
     public ListAdapter(List<MyGroup> list) {
         this.mList = list;
@@ -19,6 +27,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup viewGroup, int viewType) {
+        mContext = viewGroup.getContext();
         switch (viewType) {
             default: {
                 View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item, viewGroup, false);
@@ -32,7 +41,20 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         CellViewHolder cellViewHolder = (CellViewHolder) viewHolder;
 
         cellViewHolder.mName.setText(mList.get(position).getTitle());
-//        cellViewHolder.mTextView.setTag(mList[position]);
+        cellViewHolder.adapter.updateList(mList.get(position).getChildren());
+
+        boolean lastSeenFirstPosition = listPosition.get(position, false);
+        cellViewHolder.mRecyclerView.setVisibility(lastSeenFirstPosition ? View.VISIBLE : View.GONE);
+        cellViewHolder.mUpDown.setImageResource(lastSeenFirstPosition ? R.drawable.ic_arrow_drop_up_black_24dp : R.drawable.ic_arrow_drop_down_black_24dp);
+    }
+
+    @Override
+    public void onViewRecycled(@NonNull RecyclerView.ViewHolder holder) {
+        final int position = holder.getAdapterPosition();
+        CellViewHolder cellViewHolder = (CellViewHolder) holder;
+        listPosition.put(position, cellViewHolder.mRecyclerView.getVisibility() == View.VISIBLE);
+
+        super.onViewRecycled(holder);
     }
 
     @Override
@@ -43,25 +65,39 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     private class CellViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
         private TextView mName;
-        private TextView mUpDown;
+        private ImageView mUpDown;
         private RecyclerView mRecyclerView;
+        private ChildListAdapter adapter;
+        private FrameLayout frameLayout;
+
 
         CellViewHolder(View itemView) {
             super(itemView);
             mName = itemView.findViewById(R.id.name);
             mUpDown = itemView.findViewById(R.id.updown);
+            frameLayout = itemView.findViewById(R.id.frameLayout);
             mRecyclerView = itemView.findViewById(R.id.recyclerView);
-            itemView.setOnClickListener(this);
+
+            mRecyclerView.setHasFixedSize(true);
+            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(mContext);
+            mRecyclerView.setLayoutManager(mLayoutManager);
+            adapter = new ChildListAdapter();
+            mRecyclerView.setAdapter(adapter);
+
+
+            frameLayout.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-//            mTextView.setChecked(true);
-//            if (listener != null) {
-//                listener.onTipSelected((float) mTextView.getTag());
-//            }
+            if (mRecyclerView.getVisibility() == View.VISIBLE) {
+                mRecyclerView.setVisibility(View.GONE);
+                mUpDown.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
+            } else {
+                mRecyclerView.setVisibility(View.VISIBLE);
+                mUpDown.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
+            }
         }
     }
 }
