@@ -43,9 +43,8 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         cellViewHolder.mName.setText(mList.get(position).getTitle());
         cellViewHolder.adapter.updateList(mList.get(position).getChildren());
 
-        boolean lastSeenFirstPosition = listPosition.get(position, false);
-        cellViewHolder.mRecyclerView.setVisibility(lastSeenFirstPosition ? View.VISIBLE : View.GONE);
-        cellViewHolder.mUpDown.setImageResource(lastSeenFirstPosition ? R.drawable.ic_arrow_drop_up_black_24dp : R.drawable.ic_arrow_drop_down_black_24dp);
+        cellViewHolder.mRecyclerView.setVisibility(listPosition.get(position) ? View.VISIBLE : View.GONE);
+        cellViewHolder.mUpDown.setImageResource(listPosition.get(position) ? R.drawable.ic_arrow_drop_up_black_24dp : R.drawable.ic_arrow_drop_down_black_24dp);
     }
 
     @Override
@@ -91,13 +90,8 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         @Override
         public void onClick(View view) {
-            if (mRecyclerView.getVisibility() == View.VISIBLE) {
-                mRecyclerView.setVisibility(View.GONE);
-                mUpDown.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
-            } else {
-                mRecyclerView.setVisibility(View.VISIBLE);
-                mUpDown.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
-            }
+            listPosition.put(getAdapterPosition(), mRecyclerView.getVisibility() != View.VISIBLE);
+            notifyItemChanged(getAdapterPosition());
         }
     }
 }

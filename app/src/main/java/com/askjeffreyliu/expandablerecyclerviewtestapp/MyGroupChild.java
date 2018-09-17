@@ -1,7 +1,5 @@
 package com.askjeffreyliu.expandablerecyclerviewtestapp;
 
-import java.util.List;
-
 public class MyGroupChild {
     private String title;
     private boolean isSelected;
