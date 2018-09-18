@@ -15,19 +15,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
-
 import java.util.List;
 
 public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private List<MyGroup> mListOriginal;
+    private OnItemSelected parentListener;
     private List<MyGroup> mList;
     private Context mContext;
     private SparseBooleanArray listPosition = new SparseBooleanArray();
     private int oldParentId = -1;
     private int oldChildId = -1;
 
-    public ListAdapter(List<MyGroup> list) {
+    public ListAdapter(List<MyGroup> list, OnItemSelected parentListener) {
         this.mList = list;
+        this.parentListener = parentListener;
         updateIndex(list);
 
     }
@@ -137,6 +137,10 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ChildListAdapter.OnChildClickListener listener = new ChildListAdapter.OnChildClickListener() {
         @Override
         public void onChildClicked(int parentId, int childId) {
+            if (parentListener != null) {
+                parentListener.onChildClicked(parentId, childId);
+            }
+
             if (oldParentId >= 0 && oldChildId >= 0) {
                 notifyItemChanged(oldParentId, oldChildId);
             }
@@ -144,4 +148,8 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             oldChildId = childId;
         }
     };
+
+    public interface OnItemSelected {
+        void onChildClicked(int parentId, int childId);
+    }
 }

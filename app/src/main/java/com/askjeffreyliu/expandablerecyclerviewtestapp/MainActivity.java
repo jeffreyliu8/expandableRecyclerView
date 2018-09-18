@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,8 +101,12 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setHasFixedSize(false);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        ListAdapter adapter = new ListAdapter(myGroups);
+        ListAdapter adapter = new ListAdapter(myGroups, new ListAdapter.OnItemSelected() {
+            @Override
+            public void onChildClicked(int parentId, int childId) {
+                Log.d("jeff", "selected " + parentId + " " + childId);
+            }
+        });
         mRecyclerView.setAdapter(adapter);
-
     }
 }
