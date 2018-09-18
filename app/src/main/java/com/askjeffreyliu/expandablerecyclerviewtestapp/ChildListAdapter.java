@@ -25,10 +25,7 @@ public class ChildListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public void updateList(List<MyGroupChild> list, int parentId, int childId) {
         this.parentId = parentId;
         this.childId = childId;
-//        final ChildDiffUtilCallback diffCallback = new ChildDiffUtilCallback(mList, list);
-//        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
         mList = list;
-//        diffResult.dispatchUpdatesTo(this);
         notifyDataSetChanged();
     }
 

@@ -29,15 +29,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.mList = list;
         this.parentListener = parentListener;
         updateIndex(list);
-
     }
-
-//    public void updateList(List<MyGroup> list) {
-//        final ParentDiffUtilCallback diffCallback = new ParentDiffUtilCallback(mList, list);
-//        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
-//        mList = list;
-//        diffResult.dispatchUpdatesTo(this);
-//    }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup viewGroup, int viewType) {
