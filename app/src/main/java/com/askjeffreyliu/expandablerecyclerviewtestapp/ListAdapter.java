@@ -2,7 +2,7 @@ package com.askjeffreyliu.expandablerecyclerviewtestapp;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v7.util.DiffUtil;
+
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
@@ -15,7 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -56,7 +56,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             onBindViewHolder(holder, position);
         } else {
             CellViewHolder cellViewHolder = (CellViewHolder) holder;
-            cellViewHolder.adapter.notifyItemChanged((int) payloads.get(0),"set to false");
+            cellViewHolder.adapter.notifyItemChanged((int) payloads.get(0), "set to false");
         }
     }
 
@@ -65,7 +65,7 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         CellViewHolder cellViewHolder = (CellViewHolder) viewHolder;
 
         cellViewHolder.mName.setText(mList.get(position).getTitle());
-        cellViewHolder.adapter.updateList(mList.get(position).getChildren());
+        cellViewHolder.adapter.updateList(mList.get(position).getChildren(), oldParentId, oldChildId);
 
         cellViewHolder.mRecyclerView.setVisibility(listPosition.get(position) ? View.VISIBLE : View.GONE);
         cellViewHolder.mUpDown.setImageResource(listPosition.get(position) ? R.drawable.ic_arrow_drop_up_black_24dp : R.drawable.ic_arrow_drop_down_black_24dp);

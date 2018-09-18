@@ -2,13 +2,11 @@ package com.askjeffreyliu.expandablerecyclerviewtestapp;
 
 
 import android.support.annotation.NonNull;
-import android.support.v7.util.DiffUtil;
+
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
-import android.widget.RadioButton;
 import android.widget.TextView;
 
 import java.util.List;
@@ -17,11 +15,16 @@ public class ChildListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private List<MyGroupChild> mList;
     private OnChildClickListener listener;
 
+    private int parentId = -1;
+    private int childId = -1;
+
     public ChildListAdapter(OnChildClickListener listener) {
         this.listener = listener;
     }
 
-    public void updateList(List<MyGroupChild> list) {
+    public void updateList(List<MyGroupChild> list, int parentId, int childId) {
+        this.parentId = parentId;
+        this.childId = childId;
 //        final ChildDiffUtilCallback diffCallback = new ChildDiffUtilCallback(mList, list);
 //        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
         mList = list;
@@ -53,11 +56,16 @@ public class ChildListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, final int position) {
         CellViewHolder cellViewHolder = (CellViewHolder) viewHolder;
 
-        cellViewHolder.mName.setText(mList.get(position).getTitle());
-        cellViewHolder.mRadio.setChecked(mList.get(position).isSelected());
-
-        cellViewHolder.mName.setTag(mList.get(position).getParentId());
-        cellViewHolder.mRadio.setTag(mList.get(position).getId());
+        final MyGroupChild child = mList.get(position);
+        cellViewHolder.mName.setText(child.getTitle());
+        if (child.getParentId() == parentId && child.getId() == childId) {
+            cellViewHolder.mRadio.setChecked(true);
+        } else {
+            cellViewHolder.mRadio.setChecked(false);
+        }
+//        cellViewHolder.mRadio.setChecked(child.isSelected());
+        cellViewHolder.mName.setTag(child.getParentId());
+        cellViewHolder.mRadio.setTag(child.getId());
     }
 
     @Override
@@ -69,24 +77,13 @@ public class ChildListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private class CellViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mName;
-        private RadioButton mRadio;
-
+        private MyRadioButton mRadio;
 
         CellViewHolder(View itemView) {
             super(itemView);
             mName = itemView.findViewById(R.id.name);
             mRadio = itemView.findViewById(R.id.radioButton);
 
-            mRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    if (b) {
-                        if (listener != null) {
-                            listener.onChildClicked((int) mName.getTag(), (int) mRadio.getTag());
-                        }
-                    }
-                }
-            });
             itemView.setOnClickListener(this);
         }
 
@@ -94,9 +91,9 @@ public class ChildListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         public void onClick(View view) {
             if (!mRadio.isChecked()) {
                 mRadio.setChecked(true);
-//                if (listener != null) {
-//                    listener.onChildClicked(view, (int) mName.getTag(), (int) mRadio.getTag());
-//                }
+                if (listener != null) {
+                    listener.onChildClicked((int) mName.getTag(), (int) mRadio.getTag());
+                }
             }
         }
     }
