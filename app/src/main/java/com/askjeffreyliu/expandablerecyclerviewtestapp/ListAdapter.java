@@ -2,6 +2,7 @@ package com.askjeffreyliu.expandablerecyclerviewtestapp;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
@@ -14,16 +15,29 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private List<MyGroup> mListOriginal;
     private List<MyGroup> mList;
     private Context mContext;
     private SparseBooleanArray listPosition = new SparseBooleanArray();
+    private int oldParentId = -1;
+    private int oldChildId = -1;
 
     public ListAdapter(List<MyGroup> list) {
         this.mList = list;
+        updateIndex(list);
+
     }
+
+//    public void updateList(List<MyGroup> list) {
+//        final ParentDiffUtilCallback diffCallback = new ParentDiffUtilCallback(mList, list);
+//        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
+//        mList = list;
+//        diffResult.dispatchUpdatesTo(this);
+//    }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup viewGroup, int viewType) {
@@ -33,6 +47,16 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item, viewGroup, false);
                 return new CellViewHolder(v);
             }
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, @NonNull List<Object> payloads) {
+        if (payloads == null || payloads.size() == 0) {
+            onBindViewHolder(holder, position);
+        } else {
+            CellViewHolder cellViewHolder = (CellViewHolder) holder;
+            cellViewHolder.adapter.notifyItemChanged((int) payloads.get(0),"set to false");
         }
     }
 
@@ -81,9 +105,8 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             mRecyclerView.setHasFixedSize(true);
             RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(mContext);
             mRecyclerView.setLayoutManager(mLayoutManager);
-            adapter = new ChildListAdapter();
+            adapter = new ChildListAdapter(listener);
             mRecyclerView.setAdapter(adapter);
-
 
             frameLayout.setOnClickListener(this);
         }
@@ -94,4 +117,31 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             notifyItemChanged(getAdapterPosition());
         }
     }
+
+
+    private void updateIndex(List<MyGroup> inputList) {
+        if (inputList == null) {
+            return;
+        }
+
+        for (int i = 0; i < inputList.size(); i++) {
+            inputList.get(i).setId(i);
+            for (int j = 0; j < inputList.get(i).getChildren().size(); j++) {
+                inputList.get(i).getChildren().get(j).setParentId(i);
+                inputList.get(i).getChildren().get(j).setId(j);
+            }
+        }
+    }
+
+
+    private ChildListAdapter.OnChildClickListener listener = new ChildListAdapter.OnChildClickListener() {
+        @Override
+        public void onChildClicked(int parentId, int childId) {
+            if (oldParentId >= 0 && oldChildId >= 0) {
+                notifyItemChanged(oldParentId, oldChildId);
+            }
+            oldParentId = parentId;
+            oldChildId = childId;
+        }
+    };
 }
